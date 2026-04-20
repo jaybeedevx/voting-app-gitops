@@ -1,5 +1,5 @@
 variable "environment" {
-  description = "Environment name (e.g., dev, staging, prod)"
+  description = "Environment name (dev, staging, prod)"
   type        = string
 }
 
@@ -10,13 +10,13 @@ variable "aws_region" {
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+  description = "CIDR block for VPC"
   type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "availability_zones" {
-  description = "List of AZs to use (must be at least 2)"
+  description = "List of AZs (at least 2 for HA)"
   type        = list(string)
   default     = ["us-east-1a", "us-east-1b"]
 }
@@ -34,43 +34,49 @@ variable "public_subnet_cidrs" {
 }
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster"
+  description = "Base name of the EKS cluster"
   type        = string
   default     = "voting-app"
 }
 
 variable "kubernetes_version" {
-  description = "EKS cluster Kubernetes version"
+  description = "Kubernetes version"
   type        = string
-  default     = "1.31"
+  default     = "1.30"
 }
 
 variable "node_instance_types" {
-  description = "EC2 instance types for the managed node group"
+  description = "EC2 instance types for node group"
   type        = list(string)
   default     = ["t3.medium"]
 }
 
 variable "node_desired_size" {
-  description = "Desired number of worker nodes"
+  description = "Desired number of nodes"
   type        = number
   default     = 2
 }
 
 variable "node_min_size" {
-  description = "Minimum number of worker nodes"
+  description = "Minimum number of nodes"
   type        = number
   default     = 2
 }
 
 variable "node_max_size" {
-  description = "Maximum number of worker nodes"
+  description = "Maximum number of nodes"
   type        = number
-  default     = 3
+  default     = 5
+}
+
+variable "node_ami_type" {
+  description = "AMI type for node group. For K8s >=1.28 use AL2023"
+  type        = string
+  default     = "AL2023_x86_64_STANDARD"
 }
 
 variable "tags" {
-  description = "Common tags to apply to all resources"
+  description = "Common tags for all resources"
   type        = map(string)
   default     = {}
 }

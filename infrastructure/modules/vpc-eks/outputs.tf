@@ -19,7 +19,7 @@ output "cluster_endpoint" {
 }
 
 output "cluster_certificate_authority_data" {
-  description = "Base64 encoded CA certificate for the cluster"
+  description = "Base64 encoded CA certificate"
   value       = module.eks.cluster_certificate_authority_data
 }
 
@@ -33,15 +33,12 @@ output "cluster_name" {
   value       = module.eks.cluster_name
 }
 
-
-# Corrected: Use node_group_arn instead of arn
 output "node_group_arn" {
-  description = "ARN of the managed node group (main)"
+  description = "ARN of the main node group"
   value       = module.eks.eks_managed_node_groups["main"].node_group_arn
 }
 
-# Optional: map of all node group ARNs
-output "node_group_arns" {
-  description = "Map of managed node group ARNs"
-  value       = { for k, v in module.eks.eks_managed_node_groups : k => v.node_group_arn }
+output "node_iam_role_arn" {
+  description = "IAM role ARN attached to worker nodes"
+  value       = module.eks.eks_managed_node_groups["main"].iam_role_arn
 }
