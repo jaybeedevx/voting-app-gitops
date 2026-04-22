@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: ap-southeast-1
+  AWS_REGION: us-east-1
   TF_DIR: infrastructure/environments/dev
   PLATFORM_DIR: infrastructure/platform
 
@@ -35,7 +35,7 @@ jobs:
       - name: AWS Auth (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-actions-eks
+          role-to-assume: arn:aws:iam::159014723635:role/github-actions-eks
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v3
