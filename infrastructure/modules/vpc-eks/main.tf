@@ -15,7 +15,7 @@ module "vpc" {
   enable_nat_gateway     = true
   enable_dns_hostnames   = true
   enable_dns_support     = true
-  single_nat_gateway     = true   # cost saving
+  single_nat_gateway     = true # cost saving
   one_nat_gateway_per_az = false
 
   public_subnet_tags = {
@@ -28,8 +28,8 @@ module "vpc" {
   }
 
   tags = merge(var.tags, {
-    Environment = var.environment
-    Terraform   = "true"
+    Environment                                                    = var.environment
+    Terraform                                                      = "true"
     "kubernetes.io/cluster/${var.environment}-${var.cluster_name}" = "shared"
   })
 }
@@ -39,12 +39,12 @@ module "vpc" {
 # ----------------------------------------------------------------------
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"   # Use 20.x for stable AL2023 support
+  version = "~> 20.0" # Use 20.x for stable AL2023 support
 
   cluster_name    = "${var.environment}-${var.cluster_name}"
   cluster_version = var.kubernetes_version
 
-  enable_irsa = true   
+  enable_irsa = true
 
   cluster_addons = {
     coredns = {
@@ -69,7 +69,7 @@ module "eks" {
 
   # IAM role for cluster (auto-created)
   create_iam_role = true
-  iam_role_name = "${var.environment}-${var.cluster_name}-cluster-role" # This was 'cluster_iam_role_name'
+  iam_role_name   = "${var.environment}-${var.cluster_name}-cluster-role" # This was 'cluster_iam_role_name'
 
   # Managed node group defaults
   eks_managed_node_group_defaults = {
@@ -109,7 +109,7 @@ module "eks" {
       # Attach additional policies (e.g., ECR pull, CloudWatch)
       iam_role_additional_policies = {
         AAmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-        CloudWatchAgentServerPolicy       = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        CloudWatchAgentServerPolicy         = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       }
 
       access_entries = {
