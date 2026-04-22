@@ -18,9 +18,19 @@ module "vpc" {
   single_nat_gateway     = true   # cost saving
   one_nat_gateway_per_az = false
 
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = "1"
+    "karpenter.sh/discovery"          = "${var.environment}-${var.cluster_name}"
+  }
+
   tags = merge(var.tags, {
     Environment = var.environment
     Terraform   = "true"
+    "kubernetes.io/cluster/${var.environment}-${var.cluster_name}" = "shared"
   })
 }
 
@@ -33,6 +43,22 @@ module "eks" {
 
   cluster_name    = "${var.environment}-${var.cluster_name}"
   cluster_version = var.kubernetes_version
+
+  enable_irsa = true   
+
+  cluster_addons = {
+    coredns = {
+      most_recent = true
+    }
+
+    kube-proxy = {
+      most_recent = true
+    }
+
+    vpc-cni = {
+      most_recent = true
+    }
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -64,6 +90,16 @@ module "eks" {
       max_size     = var.node_max_size
       desired_size = var.node_desired_size
 
+      taints = [{
+        key    = "CriticalAddonsOnly"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
+
+      labels = {
+        role = "system"
+      }
+
       subnet_ids = module.vpc.private_subnets
 
       # IAM role for nodes (auto-created with standard policies)
@@ -74,6 +110,21 @@ module "eks" {
       iam_role_additional_policies = {
         AAmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         CloudWatchAgentServerPolicy       = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+      }
+
+      access_entries = {
+        admin = {
+          principal_arn = "arn:aws:iam::103855224992:user/cloud_user"
+
+          policy_associations = {
+            admin = {
+              policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+              access_scope = {
+                type = "cluster"
+              }
+            }
+          }
+        }
       }
 
       tags = merge(var.tags, {
