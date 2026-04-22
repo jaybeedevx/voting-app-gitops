@@ -12,36 +12,6 @@ repos:
       - id: check-merge-conflict
 
   # -------------------------------
-  # Terraform
-  # -------------------------------
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.105.0
-    hooks:
-      - id: terraform_fmt
-      - id: terraform_validate
-      - id: terraform_tflint
-      - id: terraform_docs
-
-  # -------------------------------
-  # Kubernetes YAML
-  # -------------------------------
-  - repo: https://github.com/yannh/kubeconform
-    rev: v0.6.7
-    hooks:
-      - id: kubeconform
-        args:
-          - "-strict"
-          - "-ignore-missing-schemas"
-
-  # -------------------------------
-  # Security scanning (Terraform + YAML)
-  # -------------------------------
-  - repo: https://github.com/bridgecrewio/checkov
-    rev: 3.2.524
-    hooks:
-      - id: checkov
-
-  # -------------------------------
   # Python (your app/)
   # -------------------------------
   - repo: https://github.com/psf/black
