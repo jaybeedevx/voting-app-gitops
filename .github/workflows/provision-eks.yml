@@ -40,11 +40,17 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init (EKS)
+        working-directory: infrastructure/environments/prod
+        run: terraform init -reconfigure
+
+      - name: Terraform Plan
+        working-directory: infrastructure/environments/prod
+        run: terraform plan -var-file=terraform.tfvars
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        working-directory: infrastructure/environments/prod
+        run: terraform apply -auto-approve -var-file=terraform.tfvars
 
       - name: Get Cluster Name Output
         id: tf-output
@@ -132,7 +138,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init (Platform)
+        working-directory: infrastructure/platform
         run: terraform init
 
-      - name: Terraform Apply (Add-ons)
+      - name: Terraform Apply (Platform Add-ons)
+        working-directory: infrastructure/platform
         run: terraform apply -auto-approve
