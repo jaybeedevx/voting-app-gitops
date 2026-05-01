@@ -10,10 +10,10 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   TF_DIR: infrastructure/environments/prod
   PLATFORM_DIR: infrastructure/platform
-  ROLE_ARN: arn:aws:iam::044260498233:role/github-actions-eks  # ← single source of truth
+  ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
 # ---------------------------------------------------
 # 1️⃣ CREATE CLUSTER
