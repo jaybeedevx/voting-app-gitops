@@ -1,3 +1,31 @@
+# =============================================================================
+# EKS ACCESS ENTRIES
+# =============================================================================
+
+data "aws_iam_role" "github_actions" {
+  name = "github-actions-eks"
+}
+
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name  = var.cluster_name
+  principal_arn = data.aws_iam_role.github_actions.arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "github_actions_admin" {
+  cluster_name  = var.cluster_name
+  principal_arn = data.aws_iam_role.github_actions.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.github_actions]
+}
+
+
+
 locals {
   oidc_provider_id  = "E4562B334E816FAD80C34DB1F69D674A"
   oidc_provider_url = "oidc.eks.${var.aws_region}.amazonaws.com/id/${local.oidc_provider_id}"
