@@ -54,3 +54,29 @@ output "cluster_endpoint" {
   value     = module.vpc_eks.cluster_endpoint
   sensitive = true
 }
+
+# =============================================================================
+# EKS ACCESS ENTRIES — created at cluster level so they survive platform runs
+# =============================================================================
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/github-actions-eks"
+  type          = "STANDARD"
+
+  depends_on = [module.eks]
+}
+
+resource "aws_eks_access_policy_association" "github_actions_admin" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/github-actions-eks"
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.github_actions]
+}
